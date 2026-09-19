@@ -99,6 +99,7 @@ public class ChessPiece {
 
     }
 
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -198,11 +199,47 @@ public class ChessPiece {
         // code to move pawns 1 square forwards
         int newRow = myPosition.getRow() + side;
         int col = myPosition.getColumn();
-        if (moveIsOnBoard(newRow,col)) {
-            ChessPosition forwardPosition = new ChessPosition(newRow,col);
+        ChessPosition forwardPosition = new ChessPosition(newRow,col);
 
-            if (board.getPiece(forwardPosition) == null) {
-                moves.add(new ChessMove(myPosition,forwardPosition, null));
+            if (moveIsOnBoard(newRow,col)) {
+                if (board.getPiece(forwardPosition) == null) {
+                    moves.add(new ChessMove(myPosition,forwardPosition, null));
+                }
+        }
+
+        // code to move pawn 2 squares
+       int startingRow;
+        if (pieceColor == ChessGame.TeamColor.WHITE) {
+            startingRow = 2;
+        } else {
+            startingRow = 7;
+        }
+
+        if (myPosition.getRow() == startingRow) {
+            int moveTwoRows = myPosition.getRow() + (2*side);
+            ChessPosition twoForwardPosition = new ChessPosition(moveTwoRows, myPosition.getColumn());
+
+            if (board.getPiece(forwardPosition) ==  null && board.getPiece(twoForwardPosition) == null) {
+                moves.add(new ChessMove(myPosition,twoForwardPosition,null));
+
+            }
+        }
+
+        // pawn moves diagonally
+        int[] captureColumns = {-1,1};
+
+        for (int colChange : captureColumns) {
+            int captureRow = myPosition.getRow() + side;
+            int captureCol = myPosition.getColumn() + colChange;
+
+            if (moveIsOnBoard(captureRow,captureCol)) {
+                ChessPosition capturePosition = new ChessPosition(captureRow,captureCol);
+                ChessPiece pieceToCapture = board.getPiece(capturePosition);
+
+                // square isn't empty and there is a piece from the other team in the spot
+                if (pieceToCapture != null && pieceToCapture.getTeamColor() != pieceColor) {
+                    moves.add(new ChessMove(myPosition,capturePosition,null));
+                }
             }
         }
 
