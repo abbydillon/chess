@@ -99,6 +99,24 @@ public class ChessPiece {
 
     }
 
+    private void addPawnMove (Collection<ChessMove> moves, ChessPosition startPosition, ChessPosition endPosition) {
+        int promotionRow;
+
+        if (pieceColor == ChessGame.TeamColor.WHITE) {
+            promotionRow = 8;
+        } else {
+            promotionRow = 1;
+        }
+
+        if (endPosition.getRow() == promotionRow) {
+            moves.add(new ChessMove(startPosition,endPosition,PieceType.QUEEN));
+            moves.add(new ChessMove(startPosition,endPosition,PieceType.ROOK));
+            moves.add(new ChessMove(startPosition,endPosition,PieceType.BISHOP));
+            moves.add(new ChessMove(startPosition,endPosition,PieceType.KNIGHT));
+        } else {
+            moves.add(new ChessMove(startPosition,endPosition,null));
+        }
+    }
 
     /**
      * Calculates all the positions a chess piece can move to
@@ -203,7 +221,7 @@ public class ChessPiece {
 
             if (moveIsOnBoard(newRow,col)) {
                 if (board.getPiece(forwardPosition) == null) {
-                    moves.add(new ChessMove(myPosition,forwardPosition, null));
+                    addPawnMove(moves, myPosition, forwardPosition);
                 }
         }
 
@@ -220,8 +238,7 @@ public class ChessPiece {
             ChessPosition twoForwardPosition = new ChessPosition(moveTwoRows, myPosition.getColumn());
 
             if (board.getPiece(forwardPosition) ==  null && board.getPiece(twoForwardPosition) == null) {
-                moves.add(new ChessMove(myPosition,twoForwardPosition,null));
-
+                moves.add(new ChessMove(myPosition,twoForwardPosition, null));
             }
         }
 
@@ -236,9 +253,9 @@ public class ChessPiece {
                 ChessPosition capturePosition = new ChessPosition(captureRow,captureCol);
                 ChessPiece pieceToCapture = board.getPiece(capturePosition);
 
-                // square isn't empty and there is a piece from the other team in the spot
+                // square isn't empty and there is a piece from the other team in the spot for the pawn to capture
                 if (pieceToCapture != null && pieceToCapture.getTeamColor() != pieceColor) {
-                    moves.add(new ChessMove(myPosition,capturePosition,null));
+                    addPawnMove(moves, myPosition, capturePosition);
                 }
             }
         }
