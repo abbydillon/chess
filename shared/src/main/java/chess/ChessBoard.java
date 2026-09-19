@@ -8,7 +8,7 @@ package chess;
  */
 public class ChessBoard {
 
-    private final ChessPiece[][] board;
+    private ChessPiece[][] board;
 
     public ChessBoard() {
         board = new ChessPiece[8][8];
@@ -44,6 +44,20 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+
+        board = new ChessPiece[8][8];
+
+        //create pawns on the board
+        for (int col = 1; col <= 8; col++) {
+            addPiece(
+                new ChessPosition(2, col), new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.PAWN)
+            );
+
+            addPiece(
+                    new ChessPosition(7, col), new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.PAWN)
+            );
+//        }
+
+        //throw new RuntimeException("Not implemented");
     }
 }
