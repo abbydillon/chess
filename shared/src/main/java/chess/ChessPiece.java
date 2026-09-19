@@ -74,7 +74,29 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
 
-        return new ArrayList<>();
-        //throw new RuntimeException("Not implemented");
+        Collection<ChessMove> moves = new ArrayList<>();
+
+        if (type == PieceType.KING) {
+            for (int rowChange = -1; rowChange <= 1; rowChange++) {
+                for (int colChange = -1; colChange <= 1; colChange++) {
+                    if (rowChange == 0 && colChange == 0) continue;
+
+                    int newRow = myPosition.getRow() + rowChange;
+                    int newCol = myPosition.getColumn() + colChange;
+
+                    if (newRow < 1 || newCol < 1 || newRow > 8 || newCol > 8) continue;
+
+                    ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                    ChessPiece pieceAtPosition = board.getPiece(newPosition);
+
+                    if(pieceAtPosition == null || pieceAtPosition.getTeamColor() != pieceColor) {
+                        moves.add(new ChessMove(myPosition, newPosition, null));
+                    }
+
+                }
+//
+            }
+        }
+        return moves;
     }
 }
