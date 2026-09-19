@@ -173,6 +173,19 @@ public class ChessPiece {
 
         }
 
+        if (type == PieceType.QUEEN) {
+            int [][] queenDirections = {
+                    {1,0},
+                    {1,1},
+                    {1,-1},
+                    {0,1},
+                    {0,-1},
+                    {-1,-1},
+                    {-1,0},
+                    {-1,1}
+            };
+            addDirectionalMoves(board, myPosition, moves, queenDirections);
+        }
 
         return moves;
     }
