@@ -65,6 +65,15 @@ public class ChessPiece {
         //throw new RuntimeException("Not implemented");
     }
 
+    private boolean moveIsOnBoard(int row, int col) {
+        return (row >= 1 && row <= 8 && col >= 1 && col <= 8);
+    }
+
+    private boolean pieceCanMoveTo(ChessBoard board, ChessPosition position) {
+        ChessPiece piece = board.getPiece(position);
+        return piece == null || piece.getTeamColor() != pieceColor;
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -84,12 +93,11 @@ public class ChessPiece {
                     int newRow = myPosition.getRow() + rowChange;
                     int newCol = myPosition.getColumn() + colChange;
 
-                    if (newRow < 1 || newCol < 1 || newRow > 8 || newCol > 8) continue;
+                    if (!moveIsOnBoard(newRow,newCol)) continue;
 
                     ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                    ChessPiece pieceAtPosition = board.getPiece(newPosition);
 
-                    if(pieceAtPosition == null || pieceAtPosition.getTeamColor() != pieceColor) {
+                    if(pieceCanMoveTo(board, newPosition)) {
                         moves.add(new ChessMove(myPosition, newPosition, null));
                     }
 
