@@ -74,6 +74,31 @@ public class ChessPiece {
         return piece == null || piece.getTeamColor() != pieceColor;
     }
 
+    private void addDirectionalMoves (ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int [][] directions) {
+
+        for (int[] direction : directions) {
+            int newRow = myPosition.getRow() + direction[0];
+            int newCol = myPosition.getColumn() + direction[1];
+
+            while (moveIsOnBoard(newRow, newCol)) {
+                ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                ChessPiece pieceAtPosition = board.getPiece(newPosition);
+
+                if (pieceAtPosition == null) {
+                    moves.add(new ChessMove(myPosition, newPosition, null));
+                } else {
+                    if (pieceAtPosition.getTeamColor() != pieceColor) {
+                        moves.add(new ChessMove(myPosition, newPosition, null));
+                    }
+                    break; //stop once there isn't another spot to move to
+                }
+                newRow += direction[0];
+                newCol += direction[1];
+            }
+        }
+
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -85,7 +110,7 @@ public class ChessPiece {
 
         Collection<ChessMove> moves = new ArrayList<>();
 
-        if (type == PieceType.KING) {
+        if (type == PieceType.KING) {  // can move 1 square in any direction
             for (int rowChange = -1; rowChange <= 1; rowChange++) {
                 for (int colChange = -1; colChange <= 1; colChange++) {
                     if (rowChange == 0 && colChange == 0) continue;
@@ -106,7 +131,7 @@ public class ChessPiece {
             }
         }
 
-        if (type == PieceType.KNIGHT) { // moves over 2 spots and 1 spot
+        if (type == PieceType.KNIGHT) { // moves over 2 squares in 1 direction and 1 square in the other
             int [][] knightMoves = {
                     {2,1}, {2,-1}, {-2,1}, {-2,-1}, {-1,2}, {-1,-2}, {1,2}, {1,-2}
             };
@@ -132,27 +157,22 @@ public class ChessPiece {
                     {0,1},
                     {0,-1}
             };
-            for (int[] direction : rookDirections) { //rook can keep moving after one open space
-                int newRow = myPosition.getRow() + direction[0];
-                int newCol = myPosition.getColumn() + direction[1];
-
-                while (moveIsOnBoard(newRow, newCol)) {
-                    ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                    ChessPiece pieceAtPosition = board.getPiece(newPosition);
-
-                    if (pieceAtPosition == null) {
-                        moves.add(new ChessMove(myPosition, newPosition, null));
-                    } else {
-                        if (pieceAtPosition.getTeamColor() != pieceColor) {
-                            moves.add(new ChessMove(myPosition, newPosition, null));
-                        }
-                        break; //stop once there isn't another spot to move to
-                    }
-                    newRow += direction[0];
-                    newCol += direction[1];
-                }
-            }
+            //rook can keep moving after one open space
+            addDirectionalMoves(board, myPosition, moves, rookDirections);
         }
+
+        if (type == PieceType.BISHOP) { // moves any number of spaces diagonally
+            int [][] bishopDirections = {
+                    {1,1},
+                    {1,-1},
+                    {-1,-1},
+                    {-1,1}
+            };
+
+            addDirectionalMoves(board, myPosition, moves, bishopDirections);
+
+        }
+
 
         return moves;
     }
