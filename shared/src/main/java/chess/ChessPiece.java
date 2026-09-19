@@ -106,8 +106,7 @@ public class ChessPiece {
             }
         }
 
-
-        if (type == PieceType.KNIGHT) {
+        if (type == PieceType.KNIGHT) { // moves over 2 spots and 1 spot
             int [][] knightMoves = {
                     {2,1}, {2,-1}, {-2,1}, {-2,-1}, {-1,2}, {-1,-2}, {1,2}, {1,-2}
             };
@@ -126,8 +125,33 @@ public class ChessPiece {
             }
         }
 
-        if (type == PieceType.ROOK) {
+        if (type == PieceType.ROOK) { // moves straight or sideways as many spots
+            int [][] rookDirections = {
+                    {1,0},
+                    {-1,0},
+                    {0,1},
+                    {0,-1}
+            };
+            for (int[] direction : rookDirections) { //rook can keep moving after one open space
+                int newRow = myPosition.getRow() + direction[0];
+                int newCol = myPosition.getColumn() + direction[1];
 
+                while (moveIsOnBoard(newRow, newCol)) {
+                    ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                    ChessPiece pieceAtPosition = board.getPiece(newPosition);
+
+                    if (pieceAtPosition == null) {
+                        moves.add(new ChessMove(myPosition, newPosition, null));
+                    } else {
+                        if (pieceAtPosition.getTeamColor() != pieceColor) {
+                            moves.add(new ChessMove(myPosition, newPosition, null));
+                        }
+                        break; //stop once there isn't another spot to move to
+                    }
+                    newRow += direction[0];
+                    newCol += direction[1];
+                }
+            }
         }
 
         return moves;
