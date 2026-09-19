@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -39,6 +42,20 @@ public class ChessBoard {
         //throw new RuntimeException("Not implemented");
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(board, that.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board);
+    }
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
@@ -56,8 +73,44 @@ public class ChessBoard {
             addPiece(
                     new ChessPosition(7, col), new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.PAWN)
             );
-//        }
+        }
 
-        //throw new RuntimeException("Not implemented");
+        ChessPiece.PieceType[] backRow = {
+                ChessPiece.PieceType.ROOK,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.KING,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.ROOK
+        };
+
+        // create back row of pieces
+        for (int col = 1; col <= 8; col++) {
+            addPiece(
+                    new ChessPosition(1,col),
+                    new ChessPiece(ChessGame.TeamColor.WHITE, backRow[col -1])
+            );
+
+            addPiece(
+                    new ChessPosition(8,col),
+                    new ChessPiece(ChessGame.TeamColor.BLACK, backRow[col -1])
+            );
+        }
+
+        // test: print out entire board
+//        for (int row = 8; row >= 1; row--) {
+//            for (int col = 1; col <= 8; col++) {
+//                ChessPiece piece = getPiece(new ChessPosition(row, col));
+//                if (piece == null) {
+//                    System.out.print(". ");
+//                } else {
+//                    System.out.print(piece.getPieceType() + " ");
+//                }
+//            }
+//            System.out.println();
+//        }
+            //throw new RuntimeException("Not implemented");
     }
 }
