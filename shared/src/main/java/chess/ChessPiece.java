@@ -187,6 +187,27 @@ public class ChessPiece {
             addDirectionalMoves(board, myPosition, moves, queenDirections);
         }
 
+        if (type == PieceType.PAWN) {
+            int side;
+            if (pieceColor == ChessGame.TeamColor.WHITE) {
+                side = 1;
+            } else {
+                side = -1;
+            }
+
+        // code to move pawns 1 square forwards
+        int newRow = myPosition.getRow() + side;
+        int col = myPosition.getColumn();
+        if (moveIsOnBoard(newRow,col)) {
+            ChessPosition forwardPosition = new ChessPosition(newRow,col);
+
+            if (board.getPiece(forwardPosition) == null) {
+                moves.add(new ChessMove(myPosition,forwardPosition, null));
+            }
+        }
+
+        }
+
         return moves;
     }
 }
