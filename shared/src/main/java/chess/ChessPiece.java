@@ -105,6 +105,31 @@ public class ChessPiece {
 //
             }
         }
+
+
+        if (type == PieceType.KNIGHT) {
+            int [][] knightMoves = {
+                    {2,1}, {2,-1}, {-2,1}, {-2,-1}, {-1,2}, {-1,-2}, {1,2}, {1,-2}
+            };
+
+            for (int[] move : knightMoves) {
+                int newRow = myPosition.getRow() + move[0];
+                int newCol = myPosition.getColumn() + move[1];
+
+                if (!moveIsOnBoard(newRow, newCol)) continue;
+
+                ChessPosition newPosition = new ChessPosition(newRow, newCol);
+
+                if (pieceCanMoveTo(board, newPosition)) {
+                    moves.add(new ChessMove(myPosition, newPosition, null));
+                }
+            }
+        }
+
+        if (type == PieceType.ROOK) {
+
+        }
+
         return moves;
     }
 }
