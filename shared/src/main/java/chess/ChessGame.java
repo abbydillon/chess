@@ -120,7 +120,28 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+
+        ChessPiece piece = board.getPiece(startPosition);
+
+        // check that it's the team's turn
+        if (piece.getTeamColor() != teamTurn) {
+            throw new RuntimeException("Not the team's turn");
+        }
+
+        // move the piece
+        board.addPiece(startPosition,null);
+        board.addPiece(endPosition,piece);
+
+        //switch to the other team's turn
+        if (teamTurn == TeamColor.WHITE) {
+            teamTurn = TeamColor.BLACK;
+        } else {
+            teamTurn = TeamColor.WHITE;
+        }
+
     }
 
     /**
@@ -147,8 +168,6 @@ public class ChessGame {
         }
 
         // go through other team's pieces and see if they can land on the king's spot
-
-
         for (int row = 1; row <= 8; row++){
             for (int col = 1; col <= 8; col++){
 
@@ -167,8 +186,6 @@ public class ChessGame {
             }
         }
 
-
-//        throw new RuntimeException("Not implemented");
         return false;
     }
 
@@ -201,8 +218,6 @@ public class ChessGame {
     public void setBoard(ChessBoard board) {
 
         this.board = board;
-
-//        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -213,7 +228,5 @@ public class ChessGame {
     public ChessBoard getBoard() {
 
         return board;
-
-//        throw new RuntimeException("Not implemented");
     }
 }
