@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.ArrayList;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -33,8 +34,8 @@ public class ChessGame {
         board.resetBoard(); // reset for a new game
         teamTurn = TeamColor.WHITE; // the white side always starts first
 
-        System.out.println("starting turn: " + teamTurn);
-        System.out.println("piece at (1,1)" + board.getPiece(new ChessPosition(1,1)));
+//        System.out.println("starting turn: " + teamTurn);
+//        System.out.println("piece at (1,1)" + board.getPiece(new ChessPosition(1,1)));
 
     }
 
@@ -42,7 +43,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        System.out.println("team turn changed to: " + teamTurn);
+//        System.out.println("team turn changed to: " + teamTurn);
         return teamTurn;
 //        throw new RuntimeException("Not implemented");
     }
@@ -74,7 +75,42 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+
+        ChessPiece piece = board.getPiece(startPosition);
+
+        if (piece == null) { // if there is no peice at this position
+            return null;
+        }
+
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> validMoves = new ArrayList<>();
+
+        // test each possible move
+        for (ChessMove move : possibleMoves) {
+            ChessPosition endPosition = move.getEndPosition();
+
+            // save the piece that is at the ending position
+            ChessPiece capturePiece = board.getPiece(endPosition);
+
+            //make the move temporarily
+            board.addPiece(endPosition, piece);
+            board.addPiece(startPosition, null);
+
+            //the move is only valid if it doesnt leave the king in check
+            if (!isInCheck(piece.getTeamColor())) {
+                validMoves.add(move);
+            }
+
+            // reset the board to bacl before checking valid possible moves
+            board.addPiece(startPosition, piece);
+            board.addPiece(endPosition, capturePiece);
+
+        }
+
+//        System.out.println("Possible moves: " + validMoves.size());
+
+        return validMoves;
+//        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -95,7 +131,45 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
 
-        throw new RuntimeException("Not implemented");
+        // find the location of the team's king
+        ChessPosition kingPosition = null;
+
+        for (int row = 1; row <= 8; row++){
+            for (int col = 1; col <= 8; col++){
+
+                ChessPosition position = new ChessPosition(row,col);
+                ChessPiece piece = board.getPiece(position);
+
+                if (piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    kingPosition = position;
+                }
+            }
+        }
+
+        // go through other team's pieces and see if they can land on the king's spot
+
+
+        for (int row = 1; row <= 8; row++){
+            for (int col = 1; col <= 8; col++){
+
+                ChessPosition position = new ChessPosition(row,col);
+                ChessPiece piece = board.getPiece(position);
+
+                if (piece != null && piece.getTeamColor() != teamColor) {
+                    Collection<ChessMove> enemyMove = piece.pieceMoves(board, position);
+
+                    for (ChessMove move : enemyMove) {
+                        if (move.getEndPosition().equals(kingPosition)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+
+//        throw new RuntimeException("Not implemented");
+        return false;
     }
 
     /**
