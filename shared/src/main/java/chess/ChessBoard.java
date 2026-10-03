@@ -24,9 +24,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-
         board[position.getRow()-1][position.getColumn()-1] = piece;
-        //throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -37,9 +35,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-
         return board[position.getRow()-1][position.getColumn()-1];
-        //throw new RuntimeException("Not implemented");
     }
 
     @Override
@@ -98,19 +94,5 @@ public class ChessBoard {
                     new ChessPiece(ChessGame.TeamColor.BLACK, backRow[col -1])
             );
         }
-
-        // test: print out entire board
-//        for (int row = 8; row >= 1; row--) {
-//            for (int col = 1; col <= 8; col++) {
-//                ChessPiece piece = getPiece(new ChessPosition(row, col));
-//                if (piece == null) {
-//                    System.out.print(". ");
-//                } else {
-//                    System.out.print(piece.getPieceType() + " ");
-//                }
-//            }
-//            System.out.println();
-//        }
-            //throw new RuntimeException("Not implemented");
     }
 }

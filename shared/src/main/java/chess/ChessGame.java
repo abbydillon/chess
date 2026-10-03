@@ -172,7 +172,8 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(row,col);
                 ChessPiece piece = board.getPiece(position);
 
-                if (piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING) {
+                if (piece != null && piece.getTeamColor() == teamColor
+                        && piece.getPieceType() == ChessPiece.PieceType.KING) {
                     kingPosition = position;
                 }
             }
