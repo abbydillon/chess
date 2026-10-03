@@ -33,19 +33,13 @@ public class ChessGame {
         board = new ChessBoard();
         board.resetBoard(); // reset for a new game
         teamTurn = TeamColor.WHITE; // the white side always starts first
-
-//        System.out.println("starting turn: " + teamTurn);
-//        System.out.println("piece at (1,1)" + board.getPiece(new ChessPosition(1,1)));
-
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-//        System.out.println("team turn changed to: " + teamTurn);
         return teamTurn;
-//        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -54,9 +48,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-
         teamTurn = team;
-//        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -78,7 +70,7 @@ public class ChessGame {
 
         ChessPiece piece = board.getPiece(startPosition);
 
-        if (piece == null) { // if there is no peice at this position
+        if (piece == null) { // if there is no piece at this position
             return null;
         }
 
@@ -143,7 +135,7 @@ public class ChessGame {
         // move the piece
         board.addPiece(startPosition,null);
 
-        //check if its a pawn moving
+        //check if it's a pawn moving
         if (move.getPromotionPiece() != null) {
             ChessPiece promotedPiece = new ChessPiece(
                     piece.getTeamColor(),
@@ -268,7 +260,6 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-
         this.board = board;
     }
 
@@ -278,7 +269,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-
         return board;
     }
 }
