@@ -2,17 +2,14 @@ package service;
 
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
-import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.UUID;
 
 public class UserServiceTest {
 
     @Test
-
     public void registerUser() throws Exception {
         MemoryUserDAO userDAO = new MemoryUserDAO();
         MemoryAuthDAO authDAO = new MemoryAuthDAO();
@@ -35,7 +32,6 @@ public class UserServiceTest {
     }
 
     @Test
-
     public  void registerDuplicateUser() throws Exception {
         MemoryUserDAO userDAO = new MemoryUserDAO();
         MemoryAuthDAO authDAO = new MemoryAuthDAO();
@@ -48,6 +44,18 @@ public class UserServiceTest {
 
         assertThrows(AlreadyTakenException.class, () -> userService.register(registerRequest));
 
+    }
+
+    @Test
+    public void registerBadRequest() {
+        MemoryUserDAO userDAO = new MemoryUserDAO();
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+
+        UserService userService = new UserService(userDAO, authDAO);
+
+        RegisterRequest registerRequest =  new RegisterRequest(null, "testpassword", "testemail");
+
+        assertThrows(BadRequestException.class, () -> userService.register(registerRequest));
     }
 
 }

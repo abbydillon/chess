@@ -2,8 +2,8 @@ package server;
 
 import dataaccess.*;
 import io.javalin.*;
-
-import service.Clear;
+import service.*;
+import com.google.gson.Gson;
 
 public class Server {
 
@@ -19,15 +19,37 @@ public class Server {
         MemoryGameDAO gameDAO = new MemoryGameDAO();
 
         Clear clearing = new Clear(userDAO, authDAO, gameDAO);
+        UserService userService  = new UserService(userDAO, authDAO);
+
+        Gson serializer = new Gson();
 
         javalin.delete("/db", ctx -> {
             try {
                 clearing.clear();
                 ctx.status(200);
                 ctx.result("{}");
-            } catch (DataAccessException exc) {
+            } catch (DataAccessException exception) {
                 ctx.status(500);
-                ctx.result("{\"message\":\"Error: " + exc.getMessage() + "\"}");
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            }
+        });
+
+        javalin.post("/user", ctx -> {
+            try {
+                RegisterRequest registerRequest = serializer.fromJson(ctx.body(), RegisterRequest.class);
+                RegisterResult registerResult = userService.register(registerRequest);
+
+                ctx.status(200);
+                ctx.result(serializer.toJson(registerResult));
+            } catch (BadRequestException exception){
+                ctx.status(400);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            } catch (AlreadyTakenException exception) {
+                ctx.status(403);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            } catch (DataAccessException exception) {
+                ctx.status(500);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
             }
         });
     }
