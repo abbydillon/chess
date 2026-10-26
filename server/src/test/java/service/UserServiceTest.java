@@ -102,4 +102,31 @@ public class UserServiceTest {
         assertThrows(IncorrectCredentialsException.class, () -> userService.login(loginRequest));
     }
 
+    @Test
+    public void logoutSuccess() throws Exception {
+        MemoryUserDAO userDAO = new MemoryUserDAO();
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+
+        UserService userService = new UserService(userDAO, authDAO);
+        AuthData authData =  new AuthData("testtoken", "testuser");
+        authDAO.createAuth(authData);
+
+        LogoutRequest logoutRequest = new LogoutRequest("testtoken");
+        userService.logout(logoutRequest);
+
+        assertNull(authDAO.getAuth("testtoken"));
+    }
+
+    @Test
+    public void logoutUnauthorized()  throws Exception {
+        MemoryUserDAO userDAO = new MemoryUserDAO();
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+
+        UserService userService = new UserService(userDAO, authDAO);
+
+        LogoutRequest logoutRequest = new LogoutRequest("badtoken");
+
+        assertThrows(IncorrectCredentialsException.class, ()  -> userService.logout(logoutRequest));
+    }
+
 }

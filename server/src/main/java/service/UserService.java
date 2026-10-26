@@ -22,7 +22,6 @@ public class UserService {
     public RegisterResult register(RegisterRequest registerRequest)
             throws DataAccessException, AlreadyTakenException, BadRequestException {
 
-
         if (registerRequest.username() == null || registerRequest.password() == null
                 || registerRequest.email() == null) {
             throw new BadRequestException("bad request");
@@ -49,7 +48,6 @@ public class UserService {
     }
 
     // Login:
-
     public LoginResult login (LoginRequest loginRequest)
             throws DataAccessException, BadRequestException, IncorrectCredentialsException {
 
@@ -74,6 +72,17 @@ public class UserService {
 
         return new LoginResult(loginRequest.username(), authToken);
 
+    }
+
+    // Logout:
+    public void logout(LogoutRequest logoutRequest) throws DataAccessException, IncorrectCredentialsException{
+        AuthData authData =  authDAO.getAuth(logoutRequest.authToken());
+
+        if(authData == null) {
+            throw new IncorrectCredentialsException("unauthorized");
+        }
+
+        authDAO.deleteAuth(logoutRequest.authToken());
     }
 
     public  static String generateToken() {

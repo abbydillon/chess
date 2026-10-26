@@ -52,6 +52,44 @@ public class Server {
                 ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
             }
         });
+
+        javalin.post("/session", ctx -> {
+            try {
+                LoginRequest loginRequest = serializer.fromJson(ctx.body(), LoginRequest.class);
+                LoginResult loginResult = userService.login(loginRequest);
+
+                ctx.status(200);
+                ctx.result(serializer.toJson(loginResult));
+            } catch (BadRequestException exception){
+                ctx.status(400);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            } catch (IncorrectCredentialsException exception) {
+                ctx.status(401);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            } catch (DataAccessException exception) {
+                ctx.status(500);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            }
+            });
+
+        javalin.delete("/session", ctx -> {
+            try {
+                String authToken = ctx.header("authorization");
+                LogoutRequest logoutRequest = new LogoutRequest(authToken);
+                userService.logout(logoutRequest);
+
+                ctx.status(200);
+                ctx.result("{}");
+            } catch (IncorrectCredentialsException exception) {
+                ctx.status(401);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            } catch (DataAccessException exception) {
+                ctx.status(500);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            }
+        });
+
+
     }
 
     public int run(int desiredPort) {
