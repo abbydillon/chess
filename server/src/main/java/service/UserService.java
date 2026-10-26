@@ -18,18 +18,20 @@ public class UserService {
         this.authDAO = authDAO;
     }
 
+    // Register:
     public RegisterResult register(RegisterRequest registerRequest)
             throws DataAccessException, AlreadyTakenException, BadRequestException {
+
+
+        if (registerRequest.username() == null || registerRequest.password() == null
+                || registerRequest.email() == null) {
+            throw new BadRequestException("bad request");
+        }
 
         UserData existingUser = userDAO.getUser(registerRequest.username());
 
         if (existingUser != null) { // username already taken
             throw new AlreadyTakenException("already taken");
-        }
-
-        if (registerRequest.username() == null || registerRequest.password() == null
-                || registerRequest.email() == null) {
-            throw new BadRequestException("bad request");
         }
 
         UserData newUser = new UserData(registerRequest.username(),
@@ -46,10 +48,35 @@ public class UserService {
 
     }
 
+    // Login:
+
+    public LoginResult login (LoginRequest loginRequest)
+            throws DataAccessException, BadRequestException, IncorrectCredentialsException {
+
+        UserData existingUser = userDAO.getUser(loginRequest.username());
+
+        if (loginRequest.username() ==  null || loginRequest.password() ==  null) {
+            throw new BadRequestException("bad request");
+        }
+
+        if (existingUser == null) { // username already taken
+            throw new IncorrectCredentialsException("incorrect credentials");
+        }
+
+        if (!existingUser.password().equals(loginRequest.password())) { // username already taken
+            throw new IncorrectCredentialsException("incorrect credentials");
+        }
+
+        String authToken = generateToken();
+
+        AuthData authData = new AuthData(authToken, loginRequest.username());
+        authDAO.createAuth(authData);
+
+        return new LoginResult(loginRequest.username(), authToken);
+
+    }
+
     public  static String generateToken() {
         return UUID.randomUUID().toString();
     }
-
-//    public LoginResult login(LoginRequest loginRequest) {return null}
-//    public void logout(LogoutRequest logoutRequest) {}
 }

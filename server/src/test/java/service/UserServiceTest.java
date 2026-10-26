@@ -58,4 +58,48 @@ public class UserServiceTest {
         assertThrows(BadRequestException.class, () -> userService.register(registerRequest));
     }
 
+    @Test
+    public void loginSuccess() throws Exception {
+
+        MemoryUserDAO userDAO = new MemoryUserDAO();
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+
+        userDAO.createUser(new UserData("testuser", "testpassword", "testemail"));
+        UserService userService = new UserService(userDAO, authDAO);
+        LoginRequest loginRequest = new LoginRequest("testuser", "testpassword");
+        LoginResult loginResult = userService.login(loginRequest);
+
+        assertEquals("testuser", loginResult.username());
+        assertNotNull(loginResult.authToken());
+
+        AuthData storedAuth = authDAO.getAuth(loginResult.authToken());
+        assertNotNull(storedAuth);
+        assertEquals("testuser", storedAuth.username());
+    }
+
+    @Test
+    public void loginBadRequest() {
+
+        MemoryUserDAO userDAO = new MemoryUserDAO();
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+
+        UserService userService = new UserService(userDAO, authDAO);
+        LoginRequest loginRequest = new LoginRequest(null, "testpassword");
+
+        assertThrows(BadRequestException.class, () -> userService.login(loginRequest));
+    }
+
+    @Test
+    public void loginIncorrectCredentials () throws Exception {
+
+        MemoryUserDAO userDAO = new MemoryUserDAO();
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+
+        userDAO.createUser(new UserData("testuser", "testpassword", "testemail"));
+        UserService userService = new UserService(userDAO, authDAO);
+        LoginRequest loginRequest = new LoginRequest("testuser", "testwrongpassword");
+
+        assertThrows(IncorrectCredentialsException.class, () -> userService.login(loginRequest));
+    }
+
 }
