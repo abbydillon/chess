@@ -6,6 +6,9 @@ import dataaccess.GameDAO;
 import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
+import service.exception.BadRequestException;
+import service.exception.ColorTakenException;
+import service.exception.IncorrectCredentialsException;
 
 public class GameService {
 
@@ -45,7 +48,8 @@ public class GameService {
             throw new IncorrectCredentialsException("unauthorized");
         }
 
-        if (joinGameRequest.playerColor() == null || (!joinGameRequest.playerColor().equals("WHITE") && !joinGameRequest.playerColor().equals("BLACK"))) {
+        if (joinGameRequest.playerColor() == null || (!joinGameRequest.playerColor().equals("WHITE")
+                && !joinGameRequest.playerColor().equals("BLACK"))) {
             throw new BadRequestException("bad request");
         }
 

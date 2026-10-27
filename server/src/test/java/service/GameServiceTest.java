@@ -7,6 +7,9 @@ import model.GameData;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import  chess.ChessGame;
+import service.exception.BadRequestException;
+import service.exception.ColorTakenException;
+import service.exception.IncorrectCredentialsException;
 
 public class GameServiceTest {
 

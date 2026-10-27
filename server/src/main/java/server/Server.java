@@ -4,6 +4,10 @@ import dataaccess.*;
 import io.javalin.*;
 import service.*;
 import com.google.gson.Gson;
+import service.exception.AlreadyTakenException;
+import service.exception.BadRequestException;
+import service.exception.ColorTakenException;
+import service.exception.IncorrectCredentialsException;
 
 public class Server {
 

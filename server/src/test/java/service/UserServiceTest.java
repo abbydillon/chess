@@ -5,6 +5,10 @@ import dataaccess.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Test;
+import service.exception.AlreadyTakenException;
+import service.exception.BadRequestException;
+import service.exception.IncorrectCredentialsException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
