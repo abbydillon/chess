@@ -20,6 +20,7 @@ public class Server {
 
         Clear clearing = new Clear(userDAO, authDAO, gameDAO);
         UserService userService  = new UserService(userDAO, authDAO);
+        GameService gameService = new GameService(authDAO, gameDAO);
 
         Gson serializer = new Gson();
 
@@ -89,7 +90,70 @@ public class Server {
             }
         });
 
+        javalin.post("/game", ctx -> {
+            try{
+                String authToken = ctx.header("authorization");
 
+                CreateGameRequest createGameRequest = serializer.fromJson(ctx.body(), CreateGameRequest.class);
+                CreateGameResult createGameResult = gameService.createGame(authToken, createGameRequest);
+
+                ctx.status(200);
+                ctx.result(serializer.toJson(createGameResult));
+            } catch (BadRequestException exception) {
+                ctx.status(400);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            } catch (IncorrectCredentialsException exception) {
+                ctx.status(401);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            } catch (DataAccessException exception) {
+                ctx.status(500);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            }
+        });
+
+
+        javalin.put("/game", ctx -> {
+            try{
+                String authToken = ctx.header("authorization");
+
+                JoinGameRequest joinGameRequest = serializer.fromJson(ctx.body(), JoinGameRequest.class);
+
+                gameService.joinGame(authToken, joinGameRequest);
+
+                ctx.status(200);
+                ctx.result("{}");
+            } catch (BadRequestException exception) {
+                ctx.status(400);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            } catch (IncorrectCredentialsException exception) {
+                ctx.status(401);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            } catch (ColorTakenException exception) {
+                ctx.status(403);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            } catch (DataAccessException exception) {
+                ctx.status(500);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            }
+        });
+
+
+        javalin.get("/game", ctx -> {
+            try{
+                String authToken = ctx.header("authorization");
+
+                ListGameResult listGameResult = gameService.listGames(authToken);
+
+                ctx.status(200);
+                ctx.result(serializer.toJson(listGameResult));
+            } catch (IncorrectCredentialsException exception) {
+                ctx.status(401);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            } catch (DataAccessException exception) {
+                ctx.status(500);
+                ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
+            }
+        });
     }
 
     public int run(int desiredPort) {
