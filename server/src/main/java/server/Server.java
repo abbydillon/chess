@@ -19,20 +19,25 @@ public class Server {
         try {
             DatabaseManager.createTables();
         } catch (DataAccessException exception) {
-            throw  new RuntimeException("Failed to initialize database", exception);
+            throw new RuntimeException("Failed to initialize database", exception);
         }
-
-        // Register your endpoints and exception handlers here:
 
         MemoryUserDAO userDAO = new MemoryUserDAO();
         MemoryAuthDAO authDAO = new MemoryAuthDAO();
         MemoryGameDAO gameDAO = new MemoryGameDAO();
 
         Clear clearing = new Clear(userDAO, authDAO, gameDAO);
-        UserService userService  = new UserService(userDAO, authDAO);
+        UserService userService = new UserService(userDAO, authDAO);
         GameService gameService = new GameService(authDAO, gameDAO);
 
         Gson serializer = new Gson();
+
+        registerClearEndpoint(clearing);
+        registerUserEndpoints(userService, serializer);
+        registerGameEndpoints(gameService, serializer);
+    }
+
+    private void registerClearEndpoint(Clear clearing) {
 
         javalin.delete("/db", ctx -> {
             try {
@@ -44,7 +49,9 @@ public class Server {
                 ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
             }
         });
+    }
 
+    private void registerUserEndpoints(UserService userService, Gson serializer) {
         javalin.post("/user", ctx -> {
             try {
                 RegisterRequest registerRequest = serializer.fromJson(ctx.body(), RegisterRequest.class);
@@ -52,7 +59,7 @@ public class Server {
 
                 ctx.status(200);
                 ctx.result(serializer.toJson(registerResult));
-            } catch (BadRequestException exception){
+            } catch (BadRequestException exception) {
                 ctx.status(400);
                 ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
             } catch (AlreadyTakenException exception) {
@@ -71,7 +78,7 @@ public class Server {
 
                 ctx.status(200);
                 ctx.result(serializer.toJson(loginResult));
-            } catch (BadRequestException exception){
+            } catch (BadRequestException exception) {
                 ctx.status(400);
                 ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
             } catch (IncorrectCredentialsException exception) {
@@ -81,7 +88,7 @@ public class Server {
                 ctx.status(500);
                 ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
             }
-            });
+        });
 
         javalin.delete("/session", ctx -> {
             try {
@@ -99,7 +106,8 @@ public class Server {
                 ctx.result("{\"message\":\"Error: " + exception.getMessage() + "\"}");
             }
         });
-
+    }
+    private void registerGameEndpoints (GameService gameService, Gson serializer) {
         javalin.post("/game", ctx -> {
             try{
                 String authToken = ctx.header("authorization");
