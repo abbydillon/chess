@@ -29,6 +29,44 @@ public class DatabaseManager {
         }
     }
 
+    static public void createTables() throws DataAccessException {
+        createDatabase();
+
+        String userTable = """
+               CREATE TABLE IF NOT EXISTS user  (
+               username VARCHAR(255) PRIMARY KEY,
+                   password VARCHAR(255) NOT NULL,
+                   email VARCHAR(255) NOT NULL)
+               """;
+
+        String authTable = """
+               CREATE TABLE IF NOT EXISTS auth (
+               authToken VARCHAR(255) PRIMARY KEY, username VARCHAR(255) NOT NULL)
+               """;
+        String gameTable = """
+               CREATE TABLE IF NOT EXISTS game (
+               gameID INT AUTO_INCREMENT PRIMARY KEY,
+               whiteUsername VARCHAR(255),
+                   blackUsername VARCHAR(255),
+                   gameName VARCHAR(225) NOT NULL,
+                   game TEXT NOT NULL)
+               """;
+
+        try (var conn = getConnection()) {
+            try (var statement = conn.prepareStatement(userTable)) {
+                statement.executeUpdate();
+            }
+            try (var statement = conn.prepareStatement(authTable)) {
+                statement.executeUpdate();
+            }
+            try (var statement = conn.prepareStatement(gameTable)) {
+                statement.executeUpdate();
+            }
+        } catch (SQLException exception) {
+            throw new DataAccessException("failed to create database tables", exception);
+        }
+    }
+
     /**
      * Create a connection to the database and sets the catalog based upon the
      * properties specified in db.properties. Connections to the database should
@@ -41,7 +79,7 @@ public class DatabaseManager {
      * }
      * </code>
      */
-    static Connection getConnection() throws DataAccessException {
+    public static Connection getConnection() throws DataAccessException {
         try {
             //do not wrap the following line with a try-with-resources
             var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);

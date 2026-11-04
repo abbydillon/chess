@@ -16,7 +16,13 @@ public class Server {
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        // Register your endpoints and exception handlers here.
+        try {
+            DatabaseManager.createTables();
+        } catch (DataAccessException exception) {
+            throw  new RuntimeException("Failed to initialize database", exception);
+        }
+
+        // Register your endpoints and exception handlers here:
 
         MemoryUserDAO userDAO = new MemoryUserDAO();
         MemoryAuthDAO authDAO = new MemoryAuthDAO();
