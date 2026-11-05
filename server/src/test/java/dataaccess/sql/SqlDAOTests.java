@@ -2,6 +2,7 @@ package dataaccess.sql;
 
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
+import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SqlDAOTests {
 
     private SqlUserDAO userDAO;
+    private SqlAuthDAO authDAO;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -17,6 +19,9 @@ public class SqlDAOTests {
         DatabaseManager.createTables();
         userDAO = new SqlUserDAO();
         userDAO.clear();
+
+        authDAO = new SqlAuthDAO();
+        authDAO.clear();
     }
 
     @Test
@@ -49,4 +54,41 @@ public class SqlDAOTests {
         assertNull(user);
     }
 
+    @Test
+    public void createAuthSuccess() throws Exception {
+        AuthData auth = new AuthData("testtoken",  "testuser");
+
+        authDAO.createAuth(auth);
+
+        AuthData storedAuth = authDAO.getAuth("testtoken");
+
+        assertNotNull(storedAuth);
+        assertEquals("testtoken", storedAuth.authToken());
+        assertEquals("testuser", storedAuth.username());
+    }
+
+    @Test
+    public void getAuthNotFound() throws Exception  {
+        AuthData user = authDAO.getAuth("doesntexist");
+
+        assertNull(user);
+    }
+
+    @Test
+    public void  deleteAuthSuccess() throws Exception {
+        AuthData  auth = new AuthData("testtoken", "testuser");
+
+        authDAO.createAuth(auth);
+        authDAO.deleteAuth("testtoken");
+        assertNull(authDAO.getAuth("testtoken"));
+    }
+
+    @Test
+    public void createDuplicateAuth() throws Exception {
+        AuthData auth = new AuthData("testtoken", "testuser");
+
+        authDAO.createAuth(auth);
+
+        assertThrows(DataAccessException.class, () -> authDAO.createAuth(auth));
+    }
 }
