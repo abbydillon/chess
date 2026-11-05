@@ -106,4 +106,35 @@ public class SqlDAOTests {
         assertTrue(gameID > 0);
     }
 
+    @Test public void getGameSuccess() throws Exception {
+        GameData game = new GameData(0, null, null, "testgame", new ChessGame());
+        int gameID = gameDAO.createGame(game); GameData storedGame = gameDAO.getGame(gameID);
+        assertNotNull(storedGame); assertEquals(gameID,  storedGame.gameID()); assertEquals("testgame",  storedGame.gameName());
+        assertNull(storedGame.whiteUsername());
+        assertNull(storedGame.blackUsername()); assertNotNull(storedGame.game());
+    }
+
+    @Test public void getGameNotFound() throws Exception {
+        GameData game = gameDAO.getGame(11111); assertNull(game);
+    }
+
+    @Test
+    public void listGamesSuccess() throws Exception {
+        gameDAO.createGame(new GameData(0, null, null, "game1", new ChessGame()));
+        gameDAO.createGame(new GameData(0, null, null, "game2", new ChessGame()));
+        var games = gameDAO.listGames(); assertEquals(2, games.size());
+    }
+
+    @Test public void updateGameSuccess() throws Exception {
+        GameData game = new GameData( 0, null, null, "testgame", new ChessGame());
+        int gameID = gameDAO.createGame(game); GameData updatedGame  =  new GameData(gameID, "whiteplayer", "blackplayer", "updatedgame", new ChessGame());
+        gameDAO.updateGame(updatedGame); GameData storedGame = gameDAO.getGame(gameID); assertEquals("whiteplayer", storedGame.whiteUsername());
+        assertEquals("blackplayer", storedGame.blackUsername()); assertEquals("updatedgame", storedGame.gameName()); }
+
+    @Test
+    public void clearGamesSuccess() throws Exception  { gameDAO.createGame(new GameData(0, null, null, "game1", new ChessGame()));
+        gameDAO.createGame(new GameData(0, null, null, "game2", new ChessGame()));
+        gameDAO.clear(); assertEquals(0, gameDAO.listGames().size());
+    }
+
 }
