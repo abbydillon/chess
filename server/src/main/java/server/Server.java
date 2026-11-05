@@ -8,6 +8,9 @@ import service.exception.AlreadyTakenException;
 import service.exception.BadRequestException;
 import service.exception.ColorTakenException;
 import service.exception.IncorrectCredentialsException;
+import dataaccess.sql.SqlGameDAO;
+import dataaccess.sql.SqlAuthDAO;
+import dataaccess.sql.SqlUserDAO;
 
 public class Server {
 
@@ -22,9 +25,9 @@ public class Server {
             throw new RuntimeException("Failed to initialize database", exception);
         }
 
-        MemoryUserDAO userDAO = new MemoryUserDAO();
-        MemoryAuthDAO authDAO = new MemoryAuthDAO();
-        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        SqlUserDAO userDAO = new SqlUserDAO();
+        SqlAuthDAO authDAO = new SqlAuthDAO();
+        SqlGameDAO gameDAO = new SqlGameDAO();
 
         Clear clearing = new Clear(userDAO, authDAO, gameDAO);
         UserService userService = new UserService(userDAO, authDAO);

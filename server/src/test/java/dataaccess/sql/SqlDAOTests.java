@@ -127,12 +127,17 @@ public class SqlDAOTests {
 
     @Test public void updateGameSuccess() throws Exception {
         GameData game = new GameData( 0, null, null, "testgame", new ChessGame());
-        int gameID = gameDAO.createGame(game); GameData updatedGame  =  new GameData(gameID, "whiteplayer", "blackplayer", "updatedgame", new ChessGame());
-        gameDAO.updateGame(updatedGame); GameData storedGame = gameDAO.getGame(gameID); assertEquals("whiteplayer", storedGame.whiteUsername());
-        assertEquals("blackplayer", storedGame.blackUsername()); assertEquals("updatedgame", storedGame.gameName()); }
+        int gameID = gameDAO.createGame(game); GameData updatedGame  =  new GameData(gameID, "whiteplayer",
+                "blackplayer", "updatedgame", new ChessGame());
+        gameDAO.updateGame(updatedGame); GameData storedGame = gameDAO.getGame(gameID);
+        assertEquals("whiteplayer", storedGame.whiteUsername());
+        assertEquals("blackplayer", storedGame.blackUsername());
+        assertEquals("updatedgame", storedGame.gameName());
+    }
 
     @Test
-    public void clearGamesSuccess() throws Exception  { gameDAO.createGame(new GameData(0, null, null, "game1", new ChessGame()));
+    public void clearGamesSuccess() throws Exception  { gameDAO.createGame(new GameData(0, null, null,
+            "game1", new ChessGame()));
         gameDAO.createGame(new GameData(0, null, null, "game2", new ChessGame()));
         gameDAO.clear(); assertEquals(0, gameDAO.listGames().size());
     }
