@@ -4,6 +4,8 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import model.AuthData;
 import model.UserData;
+import model.GameData;
+import chess.ChessGame;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,6 +14,7 @@ public class SqlDAOTests {
 
     private SqlUserDAO userDAO;
     private SqlAuthDAO authDAO;
+    private SqlGameDAO gameDAO;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -22,6 +25,9 @@ public class SqlDAOTests {
 
         authDAO = new SqlAuthDAO();
         authDAO.clear();
+
+        gameDAO = new SqlGameDAO();
+        gameDAO.clear();
     }
 
     @Test
@@ -91,4 +97,13 @@ public class SqlDAOTests {
 
         assertThrows(DataAccessException.class, () -> authDAO.createAuth(auth));
     }
+
+    @Test
+    public void createGameSuccess() throws Exception {
+        GameData game = new GameData(0, null, null, "testgame", new ChessGame());
+
+        int gameID = gameDAO.createGame(game);
+        assertTrue(gameID > 0);
+    }
+
 }

@@ -81,6 +81,5 @@ public class SqlAuthDAO implements AuthDAO {
         }  catch (SQLException exception) {
             throw new DataAccessException("failed to clear auths", exception);
         }
-
     }
 }
