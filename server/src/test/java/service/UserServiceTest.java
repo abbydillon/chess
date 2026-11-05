@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import service.exception.AlreadyTakenException;
 import service.exception.BadRequestException;
 import service.exception.IncorrectCredentialsException;
-
+import org.mindrot.jbcrypt.BCrypt;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
@@ -33,6 +33,8 @@ public class UserServiceTest {
         AuthData storedAuth = authDAO.getAuth(registerResult.authToken());
         assertNotNull(storedAuth);
         assertEquals("testuser", storedAuth.username());
+        assertNotEquals("testpassword", storedUser.password());
+        assertTrue(BCrypt.checkpw("testpassword", storedUser.password()));
     }
 
     @Test
@@ -68,7 +70,9 @@ public class UserServiceTest {
         MemoryUserDAO userDAO = new MemoryUserDAO();
         MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
-        userDAO.createUser(new UserData("testuser", "testpassword", "testemail"));
+        String hashedPassword = BCrypt.hashpw("testpassword", BCrypt.gensalt());
+        userDAO.createUser(new UserData("testuser", hashedPassword, "testemail"));
+
         UserService userService = new UserService(userDAO, authDAO);
         LoginRequest loginRequest = new LoginRequest("testuser", "testpassword");
         LoginResult loginResult = userService.login(loginRequest);
@@ -99,7 +103,9 @@ public class UserServiceTest {
         MemoryUserDAO userDAO = new MemoryUserDAO();
         MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
-        userDAO.createUser(new UserData("testuser", "testpassword", "testemail"));
+        String hashedPassword = BCrypt.hashpw("testpassword", BCrypt.gensalt());
+
+        userDAO.createUser(new UserData("testuser", hashedPassword, "testemail"));
         UserService userService = new UserService(userDAO, authDAO);
         LoginRequest loginRequest = new LoginRequest("testuser", "testwrongpassword");
 

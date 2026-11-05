@@ -8,7 +8,7 @@ import model.UserData;
 import service.exception.AlreadyTakenException;
 import service.exception.BadRequestException;
 import service.exception.IncorrectCredentialsException;
-
+import  org.mindrot.jbcrypt.BCrypt;
 import java.util.UUID;
 
 
@@ -37,8 +37,11 @@ public class UserService {
             throw new AlreadyTakenException("already taken");
         }
 
-        UserData newUser = new UserData(registerRequest.username(),
-                registerRequest.password(), registerRequest.email());
+//        UserData newUser = new UserData(registerRequest.username(),
+//                registerRequest.password(), registerRequest.email());
+
+        String hashedPassword = BCrypt.hashpw(registerRequest.password(), BCrypt.gensalt());
+        UserData newUser = new UserData(registerRequest.username(), hashedPassword, registerRequest.email());
         userDAO.createUser(newUser);
 
         String authToken = generateToken();
@@ -55,17 +58,17 @@ public class UserService {
     public LoginResult login (LoginRequest loginRequest)
             throws DataAccessException, BadRequestException, IncorrectCredentialsException {
 
-        UserData existingUser = userDAO.getUser(loginRequest.username());
-
         if (loginRequest.username() ==  null || loginRequest.password() ==  null) {
             throw new BadRequestException("bad request");
         }
+
+        UserData existingUser = userDAO.getUser(loginRequest.username());
 
         if (existingUser == null) { // username already taken
             throw new IncorrectCredentialsException("incorrect credentials");
         }
 
-        if (!existingUser.password().equals(loginRequest.password())) { // username already taken
+        if (!BCrypt.checkpw(loginRequest.password(),existingUser.password())) { // username already taken
             throw new IncorrectCredentialsException("incorrect credentials");
         }
 
@@ -75,7 +78,6 @@ public class UserService {
         authDAO.createAuth(authData);
 
         return new LoginResult(loginRequest.username(), authToken);
-
     }
 
     // Logout:

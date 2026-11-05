@@ -136,5 +136,4 @@ public class SqlDAOTests {
         gameDAO.createGame(new GameData(0, null, null, "game2", new ChessGame()));
         gameDAO.clear(); assertEquals(0, gameDAO.listGames().size());
     }
-
 }
