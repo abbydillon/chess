@@ -1,10 +1,12 @@
 package client;
 import com.google.gson.Gson;
 import model.AuthData;
+import service.LoginRequest;
 import service.RegisterRequest;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 public class ServerFacade {
@@ -18,7 +20,7 @@ public class ServerFacade {
 
     // register
     public AuthData register(String username, String password, String email) throws Exception {
-        URL url = new URL(serverUrl + "/user");
+        URL url = URI.create(serverUrl + "/user").toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setDoOutput(true);
@@ -37,8 +39,30 @@ public class ServerFacade {
         }
     }
 
+    //login
+    public AuthData login(String username, String password) throws Exception {
+        URL url = URI.create(serverUrl + "/session").toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+        conn.addRequestProperty("Content-Type", "application/json");
+
+        LoginRequest request = new LoginRequest(username, password);
+
+        try(OutputStreamWriter writer =  new OutputStreamWriter(conn.getOutputStream()))  {
+            writer.write(serializer.toJson(request));
+        }
+        if(conn.getResponseCode() !=  200) {
+            throw  new Exception("Not able to login");
+        }
+        try(InputStreamReader iReader = new InputStreamReader(conn.getInputStream())) {
+            return serializer.fromJson(iReader, AuthData.class);
+        }
+
+    }
+
     public void clear() throws Exception {
-        URL url = new URL(serverUrl + "/db");
+        URL url = URI.create(serverUrl + "/db").toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         conn.setRequestMethod("DELETE");

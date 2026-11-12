@@ -41,10 +41,26 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void FailedRegister() throws Exception {
+    public void failedRegister() throws Exception {
         facade.register("playerOne", "password", "playerEmail");
 
         Assertions.assertThrows(Exception.class, () ->  facade.register("playerOne", "password", "playerEmail"));
+    }
+
+    @Test
+    public void loginSuccess()  throws Exception {
+        facade.register("playerOne", "password", "playerEmail");
+        var result = facade.login("playerOne", "password");
+
+        Assertions.assertNotNull(result);
+        Assertions.assertNotNull(result.authToken());
+    }
+
+    @Test
+    public void failedLogin() throws Exception {
+        facade.register("playerOne", "password", "playerEmail");
+
+        Assertions.assertThrows(Exception.class, () ->  facade.login("playerOne", "wrong spassword"));
     }
 
 }
