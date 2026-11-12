@@ -101,6 +101,39 @@ public class ServerFacade {
         }
     }
 
+    // join game
+    public void joinGame (String authToken, String playerColor, int gameID)  throws Exception {
+        URL url = URI.create(serverUrl + "/game").toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("PUT");
+        conn.setDoOutput(true);
+        conn.addRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("authorization", authToken);
+
+        JoinGameRequest request = new JoinGameRequest(playerColor, gameID);
+
+
+        try(OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream())) {
+            writer.write(serializer.toJson(request));
+        }
+
+        if(conn.getResponseCode() !=  200) {
+            throw  new Exception("Not able to join game");
+        }
+    }
+
+
+    // logout
+    public void logoutRequest (String authToken)  throws Exception {
+        URL url = URI.create(serverUrl + "/session").toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("DELETE");
+        conn.setRequestProperty("authorization", authToken);
+
+        if(conn.getResponseCode() !=  200) {
+            throw  new Exception("Not able to create game");
+        }
+    }
 
     //clear
     public void clear() throws Exception {
@@ -110,7 +143,7 @@ public class ServerFacade {
         conn.setRequestMethod("DELETE");
 
         if(conn.getResponseCode() !=  200) {
-            throw new Exception("not able to clear");
+            throw new Exception("not able to logout");
         }
     }
 }
