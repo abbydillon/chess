@@ -83,10 +83,26 @@ public class ServerFacade {
         try(InputStreamReader iReader = new InputStreamReader(conn.getInputStream())) {
             return serializer.fromJson(iReader, CreateGameResult.class);
         }
+    }
 
+    // list games
+    public ListGameResult listGames (String authToken) throws Exception {
+        URL url = URI.create(serverUrl + "/game").toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("authorization", authToken);
+
+        if(conn.getResponseCode() !=  200) {
+            throw  new Exception("Not able to create game");
+        }
+
+        try(InputStreamReader iReader = new InputStreamReader(conn.getInputStream())) {
+            return serializer.fromJson(iReader, ListGameResult.class);
+        }
     }
 
 
+    //clear
     public void clear() throws Exception {
         URL url = URI.create(serverUrl + "/db").toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
