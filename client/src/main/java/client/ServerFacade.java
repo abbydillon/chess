@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import service.*;
 
 public class ServerFacade {
 
@@ -58,8 +59,33 @@ public class ServerFacade {
         try(InputStreamReader iReader = new InputStreamReader(conn.getInputStream())) {
             return serializer.fromJson(iReader, AuthData.class);
         }
+    }
+
+    // create game
+    public CreateGameResult createGame(String authToken,  String gameName) throws Exception {
+        URL url = URI.create(serverUrl + "/game").toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+        conn.addRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("authorization", authToken);
+
+        CreateGameRequest request = new CreateGameRequest(gameName);
+
+        try(OutputStreamWriter writer =  new OutputStreamWriter(conn.getOutputStream()))  {
+            writer.write(serializer.toJson(request));
+        }
+
+        if(conn.getResponseCode() !=  200) {
+            throw  new Exception("Not able to create game");
+        }
+
+        try(InputStreamReader iReader = new InputStreamReader(conn.getInputStream())) {
+            return serializer.fromJson(iReader, CreateGameResult.class);
+        }
 
     }
+
 
     public void clear() throws Exception {
         URL url = URI.create(serverUrl + "/db").toURL();

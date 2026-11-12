@@ -60,7 +60,21 @@ public class ServerFacadeTests {
     public void failedLogin() throws Exception {
         facade.register("playerOne", "password", "playerEmail");
 
-        Assertions.assertThrows(Exception.class, () ->  facade.login("playerOne", "wrong spassword"));
+        Assertions.assertThrows(Exception.class, () ->  facade.login("playerOne", "wrong password"));
+    }
+
+    @Test
+    public void createGameSuccess()  throws Exception {
+       var authData = facade.register("playerOne", "password", "playerEmail");
+        var result = facade.createGame(authData.authToken(), "test game");
+
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.gameID() > 0);
+    }
+
+    @Test
+    public void failedGameCreation() {
+        Assertions.assertThrows(Exception.class, () ->  facade.createGame("bad auth token", "test game"));
     }
 
 }
