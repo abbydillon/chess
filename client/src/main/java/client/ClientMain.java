@@ -95,7 +95,6 @@ public class ClientMain {
             System.out.println("registration worked! you are now logged in");
         } catch (Exception exception) {
             System.out.println("registration did not work!");
-            System.out.print(exception.getMessage());
         }
     }
 
@@ -166,11 +165,23 @@ public class ClientMain {
         try {
             int gameNumber = Integer.parseInt(loginPieces[1]);
 
+            if  (gameNumber <  1 ||  gameNumber > games.size()) {
+                System.out.println("Not a valid game number");
+                return;
+            }
+
             String color = loginPieces[2].toUpperCase();
+            if(!color.equals("WHITE") && !color.equals("BLACK")) {
+                System.out.println("Color has to be WHITE or BLACK");
+                return;
+            }
+
             GameData game = games.get(gameNumber - 1);
             facade.joinGame(authToken, color, game.gameID());
 
             System.out.println("Successfully joined the game!");
+        } catch (NumberFormatException exception) {
+            System.out.println("The input for the game number must be a number");
         } catch (Exception exception) {
             System.out.println("Unable to join the game!");
         }
@@ -187,6 +198,8 @@ public class ClientMain {
             GameData game = games.get(gameNumber - 1);
 
             System.out.println("Observing Game: "  + game.gameName());
+        }  catch (NumberFormatException exception) {
+            System.out.println("The input for the game number must be a number");
         } catch (Exception exception) {
             System.out.println("Unable to observe the game!");
         }
