@@ -7,6 +7,7 @@ import model.GameData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import ui.CreateBoard;
 
 public class ClientMain {
     public static void main(String[] args) {
@@ -16,6 +17,7 @@ public class ClientMain {
 
     private String authToken;
     private List<GameData> games =  new ArrayList<>();
+    private final CreateBoard board  =  new CreateBoard();
 
     public  ClientMain(int port) {
         facade = new ServerFacade(port);
@@ -82,7 +84,7 @@ public class ClientMain {
         }
     }
 
-    private void  register (String[] loginPieces) {
+    private void register (String[] loginPieces) {
         if(loginPieces.length != 4) {
             System.out.println("register <USERNAME> <PASSWORD> <EMAIL> - to create an account");
             return;
@@ -179,6 +181,12 @@ public class ClientMain {
             GameData game = games.get(gameNumber - 1);
             facade.joinGame(authToken, color, game.gameID());
 
+            if(color.equals("WHITE")) {
+                board.drawWhiteBoard(game.game().getBoard());
+            } else {
+                board.drawBlackBoard(game.game().getBoard());
+            }
+
             System.out.println("Successfully joined the game!");
         } catch (NumberFormatException exception) {
             System.out.println("The input for the game number must be a number");
@@ -195,22 +203,27 @@ public class ClientMain {
         try {
             int gameNumber = Integer.parseInt(loginPieces[1]);
 
+            if  (gameNumber <  1 ||  gameNumber > games.size()) {
+                System.out.println("Not a valid game number");
+                return;
+            }
+
             GameData game = games.get(gameNumber - 1);
 
             System.out.println("Observing Game: "  + game.gameName());
+            board.drawWhiteBoard(game.game().getBoard());
         }  catch (NumberFormatException exception) {
             System.out.println("The input for the game number must be a number");
         } catch (Exception exception) {
             System.out.println("Unable to observe the game!");
         }
-
-
     }
 
     private void logout() {
         try {
             facade.logoutRequest(authToken);
             authToken = null;
+            games.clear();
             state  = State.SIGNEDOUT;
             System.out.println("logout worked!");
         } catch (Exception exception) {
