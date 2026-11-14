@@ -1,6 +1,5 @@
 package client;
 
-import chess.*;
 import model.AuthData;
 import model.GameData;
 
@@ -16,7 +15,7 @@ public class ClientMain {
     }
 
     private String authToken;
-    private List<GameData> games =  new ArrayList<>();
+    private List<GameData> games = new ArrayList<>();
     private final CreateBoard board  =  new CreateBoard();
 
     public  ClientMain(int port) {
@@ -37,7 +36,7 @@ public class ClientMain {
     public void run() {
 
         System.out.println("Welcome to Chess. Type Help to get started.");
-        while (!state.equals(State.QUIT)) {
+        while (state != State.QUIT) {
             String input = scanner.nextLine();
             if (state == State.SIGNEDOUT) {
                 handlePreLogin(input);
@@ -97,6 +96,7 @@ public class ClientMain {
             System.out.println("registration worked! you are now logged in");
         } catch (Exception exception) {
             System.out.println("registration did not work!");
+//            System.out.println(exception.getMessage());
         }
     }
 
@@ -161,7 +161,7 @@ public class ClientMain {
 
     private void joinGame(String[] loginPieces) {
         if(loginPieces.length != 3) {
-            System.out.println("Usage:  join <ID> <WHITE | BLACK>");
+            System.out.println("Usage: join <ID> <WHITE | BLACK>");
             return;
         }
         try {
